@@ -1,0 +1,53 @@
+#include <CayenneMQTTESP8266.h> 
+
+char ssid[] = "wifi name"; 
+char password[] = "wifi password"; 
+
+char username[] = "mqtt user name"; 
+char mqtt_password[] = "mqtt password"; 
+char client_id[] = "mqtt client id"; 
+
+#define trigPin D2 
+#define echoPin D5 
+
+int green = D6; 
+
+void setup()
+{ 
+
+ Cayenne.begin(username,mqtt_password,client_id,ssid,password); 
+
+pinMode(green,OUTPUT); 
+pinMode(trigPin, OUTPUT); 
+pinMode(echoPin, INPUT); 
+Serial.begin(115200);  
+
+digitalWrite(green,HIGH); 
+
+} 
+void loop(){
+ 
+ Cayenne.loop(); 
+
+long duration, distance; 
+
+digitalWrite(trigPin, LOW);  
+delayMicroseconds(2);  
+digitalWrite(trigPin, HIGH); 
+delayMicroseconds(10);  
+digitalWrite(trigPin, LOW); 
+duration = pulseIn(echoPin, HIGH); 
+distance = (duration/2) / 29.1; 
+
+Serial.println(distance); 
+
+Cayenne.virtualWrite(3,distance); 
+
+delay(1000); 
+
+} 
+
+CAYENNE_IN(1)
+{ 
+  digitalWrite(green,!getValue.asInt()); 
+}  
